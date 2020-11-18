@@ -9,10 +9,10 @@ const connection = mysql.createConnection({
 });
 connection.connect((err) => {
     if (err) throw err;
-    userCommand();
+    runCommands();
 });
 
-const userCommand = () => {
+const runCommands = () => {
     inquirer.prompt({
         name: 'action',
         type: 'list',
@@ -71,6 +71,9 @@ const userCommand = () => {
             case 'Delete position':
                 deletePosition();
                 break;
+            case 'Delete employee':
+                deleteEmployee();
+                break;
             case 'View labor cost per department':
                 laborDepartment();
                 break;
@@ -86,5 +89,216 @@ const userCommand = () => {
         }
     });
 };
+
+const addDepartment = () => {
+    inquirer.prompt({
+        name: 'department',
+        type: 'input',
+        message: 'Enter the name of the new department'
+    }).then((answer) => { 
+        connection.query(
+            'INSERT INTO department SET ?',
+        {
+            id: 'INT PRIMARY KEY',
+            name: answer.department
+        },
+        (err) => {
+        if (err) throw err;
+        console.log(`${answer.department} was added to the TABLE department`);
+        runCommands();
+    });
+  });
+};
+
+const addPosition = () => {
+    inquirer.prompt(
+    {
+        name: 'position',
+        type: 'input',
+        message: 'Enter the name of the new position'
+    },
+    {
+        name: 'salary',
+        type: 'input',
+        message: 'Enter the salary of the new position'
+    },
+    {
+        name: 'department',
+        type: 'input',
+        message: 'Enter the department_id of the new position'
+    }).then((answer) => { 
+        connection.query(
+            'INSERT INTO department SET ?',
+        {
+            id: 'INT PRIMARY KEY',
+            title: answer.position,
+            salary: answer.salary,
+            department_id: answer.department
+        },
+        (err) => {
+        if (err) throw err;
+        console.log(`${answer.position} was added to the TABLE position`);
+        runCommands();
+    });
+  });
+};
+
+const addEmployee = () => {
+    inquirer.prompt(
+    {
+        name: 'first',
+        type: 'input',
+        message: 'Enter first name'
+    },
+    {
+        name: 'last',
+        type: 'input',
+        message: 'Enter last name'
+    },
+    {
+        name: 'position',
+        type: 'input',
+        message: 'Enter position_id of new employee'
+    },
+    {
+        name: 'manager',
+        type: 'input',
+        message: 'Enter manager_id of new employee'
+    })
+    .then((answer) => { 
+        connection.query(
+            'INSERT INTO employee SET ?',
+        {
+            id: 'INT PRIMARY KEY',
+            first_name: answer.first,
+            last_name: answer.last,
+            position_id: answer.position,
+            manager_id: answer.manager
+        },
+        (err) => {
+        if (err) throw err;
+        console.log(`${answer.first} was added to the TABLE employee`);
+        runCommands();
+    });
+  });
+};
+
+const viewDepartment = () => {
+    const query = 'SELECT...';
+    connection.query(query, (query, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    })
+};
+
+const viewPosition = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
+const viewEmployee = () => {
+    const query = 'SELECT...';
+    connection.query(query, (query, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    })
+};
+
+const updatePosition = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
+const updateManager = () => {
+    const query = 'SELECT...';
+    connection.query(query, (query, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    })
+};
+
+const viewManager = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
+const deleteDepartment = () => {
+    const query = 'SELECT...';
+    connection.query(query, (query, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    })
+};
+
+const deletePosition = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
+const deleteEmployee = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
+const laborDepartment = () => {
+    const query = 'SELECT...';
+    connection.query(query, (query, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    })
+};
+
+const laborEmployee = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
+const laborManager = () => {
+    const query = 'SELECT...';
+    connection.query(query, (query, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    })
+};
+
+const addDepartment = () => {
+    const query = 'SELECT * FROM ... ';
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        res.map((r) => console.log(r.artist));
+        runCommands();
+    });
+};
+
 
 
