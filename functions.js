@@ -184,21 +184,40 @@ const addEmployee = () => {
 };
 
 const viewDepartment = () => {
-    const query = 'SELECT...';
-    connection.query(query, (query, res) => {
-        if (err) throw err;
-        res.map((r) => console.log(r.artist));
-        runCommands();
+    inquirer.prompt({
+        name: 'department',
+        type: 'list',
+        message: 'Which department would you like to search?',
+        choices: ['dept1', 'dept2', 'dept3', 'dept4']
     })
+    .then((answer) => {
+        const query = 'SELECT * FROM department WHERE ?';
+        connection.query(query, {name: answer.department}, (err, res) => {
+        if (err) throw err;
+        res.map((r) => 
+            console.log(`id: ${r.id} || name: ${r.name}`)
+            );
+        runCommands();
+    });
+  });
 };
 
 const viewPosition = () => {
-    const query = 'SELECT * FROM ... ';
-    connection.query(query, (err, res) => {
+    inquirer.prompt({
+        name: 'position',
+        type: 'list',
+        message: 'Which position would you like to search?',
+        choices: ['pos1', 'pos2', 'pos3', 'pos4']
+    }).then((answer) => { 
+    const query = 'SELECT * FROM position WHERE ?';
+    connection.query(query, {title: answer.position}, (err, res) => {
         if (err) throw err;
-        res.map((r) => console.log(r.artist));
+        res.map((r) => 
+        console.log(`id: ${r.id} || title: ${r.title} || salary: ${r.salary} || department_id: ${r.department_id}`)
+        );
         runCommands();
     });
+});
 };
 
 const viewEmployee = () => {
