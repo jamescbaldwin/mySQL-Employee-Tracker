@@ -12,12 +12,16 @@ connection.connect((err) => {
     runCommands();
 });
 
+
 const runCommands = () => {
     inquirer.prompt({
         name: 'action',
         type: 'list',
         message: 'What would you like to do?',
         choices: [
+            'View all departments',
+            'View all positions',
+            'View all employees',
             'Add a department',
             'Add a position',
             'Add an employee',
@@ -38,6 +42,15 @@ const runCommands = () => {
     })
     .then((answer) => {
         switch (answer.action) {
+            case 'View all departments':
+                allDepartments();
+                break;
+            case 'View all positions':
+                allPositions();
+                break;
+            case 'View all employees':
+                allEmployees();
+                break;
             case 'Add a department':
                 addDepartment();
                 break;
@@ -90,21 +103,44 @@ const runCommands = () => {
     });
 };
 
+const allDepartments = () => {
+    connection.query("SELECT * FROM department", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        runCommands();
+    });
+};
+const allPositions = () => {
+    connection.query("SELECT * FROM position", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        runCommands();
+    });
+};
+const allEmployees = () => {
+    connection.query("SELECT * FROM employee", function(err, res) {
+        if (err) throw err;
+        console.table(res);
+        runCommands();
+    });
+};
+
 const addDepartment = () => {
     inquirer.prompt({
         name: 'department',
         type: 'input',
-        message: 'Enter the name of the new department'
-    }).then((answer) => { 
-        connection.query(
-            'INSERT INTO department SET ?',
-        {
-            id: 'INT PRIMARY KEY',
-            name: answer.department
+        message: 'Enter the name of the new department:',
+        validate: async function confirmStringInput(input) {
+            if (input.trim() != "" && input.trim().length <= 30) {
+                return true;
+            }
+            return "Invalid department name. Please limit name to 30 characters or fewer.";
         },
-        (err) => {
-        if (err) throw err;
-        console.log(`${answer.department} was added to the TABLE department`);
+    }).then((answer) => { 
+        const query = `INSERT INTO department (name) VALUES (?)`
+        connection.query(query, [answer.department], (err, res) => {
+            if (err) throw err;
+            console.log("New department was successfully created!")
         runCommands();
     });
   });
@@ -188,7 +224,7 @@ const viewDepartment = () => {
         name: 'department',
         type: 'list',
         message: 'Which department would you like to search?',
-        choices: ['dept1', 'dept2', 'dept3', 'dept4']
+        choices: ["Engineering", "Sales", "Finance", "Legal"]
     })
     .then((answer) => {
         const query = 'SELECT * FROM department WHERE ?';
@@ -207,7 +243,7 @@ const viewPosition = () => {
         name: 'position',
         type: 'list',
         message: 'Which position would you like to search?',
-        choices: ['pos1', 'pos2', 'pos3', 'pos4']
+        choices: ['Lead Engineer', 'Software Engineer', 'Sales Lead', 'Sales Rep', 'CFO', 'Accountant', 'Legal Team Lead', 'Lawyer']
     }).then((answer) => { 
     const query = 'SELECT * FROM position WHERE ?';
     connection.query(query, {title: answer.position}, (err, res) => {
@@ -217,34 +253,74 @@ const viewPosition = () => {
         );
         runCommands();
     });
-});
+  });
 };
 
 const viewEmployee = () => {
-    const query = 'SELECT...';
-    connection.query(query, (query, res) => {
+    inquirer.prompt({
+        name: 'employee',
+        type: 'input',
+        message: 'Which employee (surname) would you like to search?'
+    }).then((answer) => { 
+    const query = 'SELECT * FROM employee WHERE ?';
+    connection.query(query, {last_name: answer.employee}, (err, res) => {
         if (err) throw err;
-        res.map((r) => console.log(r.artist));
+        res.map((r) => 
+        console.log(`id: ${r.id} || first_name: ${r.first_name} || last_name: ${r.last_name} || position_id: ${r.position_id} || manager_id: ${r.manager_id}`)
+        );
         runCommands();
-    })
+    });
+  });
 };
 
 const updatePosition = () => {
-    const query = 'SELECT * FROM ... ';
-    connection.query(query, (err, res) => {
+    inquirer.prompt(
+        {
+        name: 'employee',
+        type: 'list',
+        message: 'Which employees position would you like to update (surname)?',
+        choices: [emp1, emp2, emp3, emp4, ...]
+        },
+        {
+        name: 'position',
+        type: 'input',
+        message: 'Enter the new position for this employee'
+        }
+    ).then((answer) => { 
+    const query = 'UPDATE employee SET WHERE ?';
+    connection.query(query, {last_name: answer.employee}, (err, res) => {
         if (err) throw err;
-        res.map((r) => console.log(r.artist));
+        res.map((r) => 
+        console.log(`id: ${r.id} || first_name: ${r.first_name} || last_name: ${r.last_name} || position_id: ${answer.position} || manager_id: ${r.manager_id}`)
+        );
         runCommands();
     });
+  });
 };
 
 const updateManager = () => {
-    const query = 'SELECT...';
-    connection.query(query, (query, res) => {
+    inquirer.prompt(
+        {
+        name: 'employee',
+        type: 'list',
+        message: 'Which employees position would you like to update (surname)?',
+        choices: [emp1, emp2, emp3, emp4, ...]
+        },
+        {
+        name: 'manager',
+        type: 'input',
+        message: 'Enter the new manager for this employee (First + Last)'
+        }
+    ).then((answer) => { 
+    const query = 'UPDATE employee SET WHERE ?';
+    connection.query(query, {last_name: answer.employee}, (err, res) => {
         if (err) throw err;
-        res.map((r) => console.log(r.artist));
+        res.map((r) => 
+        console.log(`id: ${r.id} || first_name: ${r.first_name} || last_name: ${r.last_name} || position_id: ${answer.position} || manager_id: ${answer.manager}`)
+        );
         runCommands();
-    })
+    });
+  });
 };
 
 const viewManager = () => {
