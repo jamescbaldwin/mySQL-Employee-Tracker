@@ -22,10 +22,10 @@ const runCommands = () => {
             'View all departments',
             'View all positions',
             'View all employees',
-            // 'Add a department',
-            // 'Add a position',
-            // 'Add an employee',
-            // 'View a department',
+            'Add a department',
+            'Add a position',
+            'Add an employee',
+            'View a department',
             // 'View a position',
             // 'View an employee',
             // 'Update employee positions',
@@ -51,18 +51,18 @@ const runCommands = () => {
             case 'View all employees':
                 allEmployees();
                 break;
-            // case 'Add a department':
-            //     addDepartment();
-            //     break;
-            // case 'Add a position':
-            //     addPosition();
-            //     break;
-            // case 'Add an employee':
-            //     addEmployee();
-            //     break;
-            // case 'View a department':
-            //     viewDepartment();
-            //     break;
+            case 'Add a department':
+                addDepartment();
+                break;
+            case 'Add a position':
+                addPosition();
+                break;
+            case 'Add an employee':
+                addEmployee();
+                break;
+            case 'View a department':
+                viewDepartment();
+                break;
             // case 'View a position':
             //     viewPosition();
             //     break;
@@ -104,7 +104,7 @@ const runCommands = () => {
     });
 };
 
-const allDepartments = () => {
+function allDepartments() {
     connection.query("SELECT * FROM department", function(err, res) {
         if (err) throw err;
         console.table(res);
@@ -112,7 +112,7 @@ const allDepartments = () => {
     });
 };
 
-const allPositions = () => {
+function allPositions() {
     connection.query("SELECT * FROM position", function(err, res) {
         if (err) throw err;
         console.table(res);
@@ -120,7 +120,7 @@ const allPositions = () => {
     });
 };
 
-const allEmployees = () => {
+function allEmployees() {
     connection.query("SELECT * FROM employee", function(err, res) {
         if (err) throw err;
         console.table(res);
@@ -128,100 +128,170 @@ const allEmployees = () => {
     });
 };
 
-// const addDepartment = () => {
-//     inquirer.prompt({
-//         name: 'department',
-//         type: 'input',
-//         message: 'Enter the name of the new department:',
-//         validate: async function confirmStringInput(input) {
-//             if (input.trim() != "" && input.trim().length <= 30) {
-//                 return true;
-//             }
-//             return "Invalid department name. Please limit name to 30 characters or fewer.";
-//         },
-//     }).then((answer) => { 
-//         const query = `INSERT INTO department (name) VALUES (?)`
-//         connection.query(query, [answer.department], (err, res) => {
-//             if (err) throw err;
-//             console.log("New department was successfully created!")
-//         runCommands();
-//     });
-//   });
-// };
+function addDepartment() {
+    inquirer.prompt({
+        name: 'department',
+        type: 'input',
+        message: 'Enter the name of the new department:',
+        validate: async function confirmStringInput(input) {
+            if (input.trim() != "" && input.trim().length <= 30) {
+                return true;
+            }
+            return "Invalid department name. Please limit name to 30 characters or fewer.";
+        },
+    }).then((answer) => { 
+        const query = `INSERT INTO department (name) VALUES (?)`
+        connection.query(query, [answer.department], (err, res) => {
+            if (err) throw err;
+            console.log("New department was successfully created!")
+        runCommands();
+    });
+  });
+};
 
-// const addPosition = () => {
-//     inquirer.prompt(
-//     {
-//         name: 'position',
-//         type: 'input',
-//         message: 'Enter the name of the new position'
-//     },
-//     {
-//         name: 'salary',
-//         type: 'input',
-//         message: 'Enter the salary of the new position'
-//     },
-//     {
-//         name: 'department',
-//         type: 'input',
-//         message: 'Enter the department_id of the new position'
-//     }).then((answer) => { 
-//         connection.query(
-//             'INSERT INTO department SET ?',
-//         {
-//             id: 'INT PRIMARY KEY',
-//             title: answer.position,
-//             salary: answer.salary,
-//             department_id: answer.department
-//         },
-//         (err) => {
-//         if (err) throw err;
-//         console.log(`${answer.position} was added to the TABLE position`);
-//         runCommands();
-//     });
-//   });
-// };
+function addPosition() {
+    connection.query('SELECT * FROM department', function (err, res) {
+        const departmentList = res.map(function (dept) {
+            return {
+                name: dept.name,
+                value: dept.id
+            };
+        });
+        inquirer.prompt([
+            {
+                name: 'position',
+                type: 'input',
+                message: 'Enter the title of the new position'
+            },
+            {
+                name: 'salary',
+                type: 'input',
+                message: 'Enter the salary of the new position'
+            },
+            {
+                name: 'department',
+                type: 'list',
+                message: 'Choose the department of the new position',
+                choices: departmentList
+            },
+            {
+                name: 'id',
+                type: 'input',
+                message: 'Enter the 2-digit positionID that most accurately reflects the department and status of the created position'
+            }
+        ]).then((answer) => { 
+        connection.query(
+            'INSERT INTO position SET ?',
+        {
+            id: answer.id,
+            title: answer.position,
+            salary: answer.salary,
+            department_id: answer.department,
+        },
+        function (err, res) {
+            if (err) throw err;
+            runCommands();
+        }
+      );
+    });
+  });
+};
 
-// const addEmployee = () => {
-//     inquirer.prompt(
-//     {
-//         name: 'first',
-//         type: 'input',
-//         message: 'Enter first name'
-//     },
-//     {
-//         name: 'last',
-//         type: 'input',
-//         message: 'Enter last name'
-//     },
-//     {
-//         name: 'position',
-//         type: 'input',
-//         message: 'Enter position_id of new employee'
-//     },
-//     {
-//         name: 'manager',
-//         type: 'input',
-//         message: 'Enter manager_id of new employee'
-//     })
-//     .then((answer) => { 
-//         connection.query(
-//             'INSERT INTO employee SET ?',
-//         {
-//             first_name: answer.first,
-//             last_name: answer.last,
-//             position_id: answer.position,
-//             manager_id: answer.manager
-//         },
-//         (err) => {
-//         if (err) throw err;
-//         console.log(`${answer.first} was added to the TABLE employee`);
-//         runCommands();
-//     });
-//   });
-// };
+function addEmployee() {
+    connection.query('SELECT * FROM department', function (err, res) {
+        if (err) throw err;
+        const departments = res.map(function (depQ) {
+            return {
+                name: depQ.name,
+                value: depQ.id
+            };
+        });
+        inquirer.prompt([
+            {
+                name: 'first',
+                type: 'input',
+                message: 'Enter first name'
+            },
+            {
+                name: 'last',
+                type: 'input',
+                message: 'Enter last name'
+            },
+            {
+                name: 'department',
+                type: 'list',
+                message: 'Enter the department of the new employee',
+                choices: departments
+            }
+        ]).then(function (data) {
+            const newEmployee = data;
+            connection.query('SELECT *  FROM position WHERE department_id = "+newEmployee.department+"', function (err, res) {
+                if (err) throw err;
+                const empPosition = res.map(function (position) {
+                    return {
+                        name: position.title,
+                        value: position.id
+                    };
+                });
+                inquirer.prompt([
+                    {
+                        type: "list",
+                        name: "positions",
+                        message: "Select a job title for the new employee",
+                        choices: empPosition
+                    }
+                ]).then(function (data) {
+                    const newPosition = data.positions;
+                    connection.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employee", function(err, res) {
+                        if (err) throw err;
+                        const empManager = res.map(function(jeffe) {
+                            return {
+                                name: jeffe.manager,
+                                value: jeffe.id
+                            }
+                        })
+                        inquirer.prompt([
+                            {
+                                type: "list",
+                                name: "manager",
+                                message: "Who will be the new employees manager?",
+                                choices: empManager
+                            }
+                        ]).then(function(data) {
+                            connection.query("INSERT INTO employee SET ?",
+                            {
+                                first_name: newEmployee.first_name,
+                                last_name: newEmployee.last_name,
+                                position_id: newPosition,
+                                manager_id: data.manager
+                            },
+                            function(err, res) {
+                                if (err) throw err;
+                                runCommands();
+                            })
+                        })
+                    })
+                })
+            })
+        })
+    });
+}
 
-// const viewDepartment = () => {
+function viewDepartment() {
+    const query = `SELECT department.name AS department, position.title, employee.id, employee.first_name, employee.last_name
+    FROM employee
+    LEFT JOIN position ON (position.id = employee.position_id)
+    LEFT JOIN department ON (department.id = position.department_id)
+    ORDER BY department.name;`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        console.log('\n');
+        console.log('VIEW EMPLOYEE BY DEPARTMENT');
+        console.log('\n');
+        console.table(res);
+        runCommands();
+    });
+};
 //     inquirer.prompt({
 //         name: 'department',
 //         type: 'list',
@@ -240,7 +310,7 @@ const allEmployees = () => {
 //   });
 // };
 
-// const viewPosition = () => {
+// function viewPosition = () => {
 //     inquirer.prompt({
 //         name: 'position',
 //         type: 'list',
@@ -258,7 +328,7 @@ const allEmployees = () => {
 //   });
 // };
 
-// const viewEmployee = () => {
+// function viewEmployee = () => {
 //     inquirer.prompt({
 //         name: 'employee',
 //         type: 'input',
@@ -275,7 +345,7 @@ const allEmployees = () => {
 //   });
 // };
 
-// const updatePosition = () => {
+// function updatePosition = () => {
 //     inquirer.prompt(
 //         {
 //         name: 'employee',
@@ -300,7 +370,7 @@ const allEmployees = () => {
 //   });
 // };
 
-// const updateManager = () => {
+// function updateManager = () => {
 //     inquirer.prompt(
 //         {
 //         name: 'employee',
@@ -325,16 +395,25 @@ const allEmployees = () => {
 //   });
 // };
 
-// const viewManager = () => {
-//     const query = 'SELECT * FROM ... ';
+// function viewManager() {
+//     const query = `SELECT CONCAT(manager.first_name, ' ', manager.last_name AS manager, department.name AS department, employee.id, employee.first_name, employee.last_name, position.title
+//     FROM employee
+//     LEFT JOIN employee manager on manager.id = employee.manager_id
+//     INNER JOIN position ON (position.id = employee.position_id && employee.manager_id != 'NULL)
+//     INNER JOIN department ON (department.id = position.department_id)
+//     ORDER BY manager;`;
 //     connection.query(query, (err, res) => {
 //         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
+//         console.log('\n');
+//         console.log('VIEW EMPLOYEE BY MANAGER');
+//         console.log('\n');
+//         console.table(res);
+//         // res.map((r) => console.log(r.artist));
 //         runCommands();
 //     });
 // };
 
-// const deleteDepartment = () => {
+// function deleteDepartment = () => {
 //     const query = 'SELECT...';
 //     connection.query(query, (query, res) => {
 //         if (err) throw err;
@@ -343,7 +422,7 @@ const allEmployees = () => {
 //     })
 // };
 
-// const deletePosition = () => {
+// function deletePosition = () => {
 //     const query = 'SELECT * FROM ... ';
 //     connection.query(query, (err, res) => {
 //         if (err) throw err;
@@ -352,7 +431,7 @@ const allEmployees = () => {
 //     });
 // };
 
-// const deleteEmployee = () => {
+// function deleteEmployee = () => {
 //     const query = 'SELECT * FROM ... ';
 //     connection.query(query, (err, res) => {
 //         if (err) throw err;
@@ -361,7 +440,7 @@ const allEmployees = () => {
 //     });
 // };
 
-// const laborDepartment = () => {
+// function laborDepartment = () => {
 //     const query = 'SELECT...';
 //     connection.query(query, (query, res) => {
 //         if (err) throw err;
@@ -370,7 +449,7 @@ const allEmployees = () => {
 //     })
 // };
 
-// const laborEmployee = () => {
+// function laborEmployee = () => {
 //     const query = 'SELECT * FROM ... ';
 //     connection.query(query, (err, res) => {
 //         if (err) throw err;
@@ -379,7 +458,7 @@ const allEmployees = () => {
 //     });
 // };
 
-// const laborManager = () => {
+// function laborManager = () => {
 //     const query = 'SELECT...';
 //     connection.query(query, (query, res) => {
 //         if (err) throw err;
@@ -388,7 +467,7 @@ const allEmployees = () => {
 //     })
 // };
 
-// const addDepartment = () => {
+// function addDepartment = () => {
 //     const query = 'SELECT * FROM ... ';
 //     connection.query(query, (err, res) => {
 //         if (err) throw err;
@@ -396,7 +475,3 @@ const allEmployees = () => {
 //         runCommands();
 //     });
 // };
-
-
-
-
