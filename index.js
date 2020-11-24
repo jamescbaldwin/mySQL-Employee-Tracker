@@ -25,7 +25,7 @@ const runCommands = () => {
             'View all employees',
             'Add a department',
             'Add a position',
-            // 'Add an employee',
+            'Add an employee',
             'View employees by department',
             'View employees by manager',
             'Search a position',
@@ -50,9 +50,9 @@ const runCommands = () => {
             case 'Add a position':
                 addPosition();
                 break;
-            // case 'Add an employee':
-            //     addEmployee();
-            //     break;
+            case 'Add an employee':
+                addEmployee();
+                break;
             case 'View employees by department':
                 employeeBYdepartment();
                 break;
@@ -146,7 +146,7 @@ function addPosition() {
             {
                 name: 'id',
                 type: 'input',
-                message: 'Enter the 2-digit positionID that most accurately reflects the department and status of the created position'
+                message: 'Enter the 2-digit positionID that most accurately reflects the department and status of the created position (13-19 for new engineering positions, 22-29 for new sales positions, 32-39 for new finance positions, 42-49 for new legal positions)'
             }
         ]).then((answer) => { 
         connection.query(
@@ -166,164 +166,59 @@ function addPosition() {
   });
 };
 
-// function addEmployee() {
-//     connection.query('SEELCT * FROM position', function(err, res) {
-//         if (err) throw err;
-//     inquirer.prompt([
-//         {
-//         name: "firstName",
-//         type: "input",
-//         message: "Enter first name of new employee"
-//         },
-//         {
-//         name: "lastName",
-//         type: "input",
-//         message: "Enter last name of the new employee"
-//         },
-//         {
-//         name: "positionName",
-//         type: "list",
-//         message: "Enter position of new employee",
-//         choices: function() {
-//             positionArray = [];
-//             result.forEach(result => {
-//                 positionArray.push(
-//                     result.title
-//                 );
-//             })
-//             return positionArray;
-//             }
-//           }
-//         ])
-//         .then(function(answer) {
-//             console.log(answer);
-//             const position = answer.positionName;
-//             connection.query('SELECT * FROM position', function(err, res) {
-//                 if (err) throw err;
-//                 let filteredPosition = res.filter(function(res) {
-//                     return res.title == position;
-//                 })
-//             let positionId = filteredPosition[0].id;
-//             connection.query('SELECT * FROM employee', function(err, res) {
-//                 inquirer.prompt([
-//                     {
-//                         name: "manager",
-//                         type: "list",
-//                         message: "Select manager of new employee",
-//                         choices: function() {
-//                             managerArray = []
-//                             res.forEach(res => {
-//                                 managerArray.push(res.last_name)
-//                             })
-//                             return managerArray;
-//                         }
-//                     }
-//                 ]).then(function(managerAnswer) {
-//                     const manager = managerAnswer.manager;
-//                     connection.query('SELECT * FROM employee', function(err, res) {
-//                         if (err) throw err;
-//                         let filteredManager = res.filter(function(res) {
-//                             return res.last_name == manager;
-//                         })
-//                         let managerId = filteredManager[0].id;
-//                         console.log(managerAnswer);
-//                         let query = "INSERT INTO employee (first_name, last_name, position_id, manager_id) VALUES (?, ?, ?, ?)";
-//                         let values = [answer.firstName, answer.lastName, positionId, managerId]
-//                         console.log(values);
-//                         connection.query(query, values,
-//                             function(err, res, fields) {
-//                                 console.log(`You have successfully added ${(values[0]).toUpperCase()}`)
-//                             })
-//                             runCommands();
-//                     })
-//                 })
-//              })
-//            })
-//         })
-//      })
-//     }
+function addEmployee() {
+    inquirer.prompt([
+        {
+            type: 'input',
+            name: 'firstName',
+            message: 'Enter first name of new employee'
+        },
+        {
+            type: 'input',
+            name: 'lastName',
+            message: 'Enter last name of new employee'
+        },
+        {
+            type: 'list',
+            name: 'posID',
+            message: 'Choose position_id of new employee',
+            choices: 
+               [{value: 10, name: 'Lead Engineer', short: '10-Lead Engineer'}, 
+                {value: 11, name: 'Software Engineer', short: '11-Software Engineer'},
+                {value: 20, name: 'Sales Lead', short: '20-Sales Lead'}, 
+                {value: 21, name: 'Sales Rep', short: '21-Sales Rep'},
+                {value: 30, name: 'CFO', short: '30-CFO'}, 
+                {value: 31, name: 'Accountant', short: '31-Accountant'},
+                {value: 40, name: 'Legal Team Lead', short: '40-Legal Team Lead'}, 
+                {value: 41, name: 'Lawyer', short: '41-Lawyer'}]
+        },
+        {
+            type: 'list',
+            name: 'manID',
+            message: 'Choose manager_id of new employee',
+            choices: [
+            {value: 1, name: 'Ashley Rodriguez', short: '1-Ashley Rodriguez'}, 
+            {value: 2, name: 'Tammer Galal', short: '2-Tammer Galal'},
+            {value: 3, name: 'Mayer Rothschild', short: '3-Mayer Rothschild'}, 
+            {value: 4, name: 'Sarah Lourd', short: '4-Sarah Lourd'}]
+        }
+    ]).then((answers) => {
+        connection.query(
+            'INSERT INTO employee SET ?', 
+        {
+            first_name: answers.firstName,
+            last_name: answers.lastName,
+            position_id: answers.posID,
+            manager_id: answers.manID
+        },
+        function (err, res) {
+            if (err) throw err;
+            runCommands();
+        }
+        );
+    })
+}
 
-//                      {
-//     connection.query('SELECT * FROM department', function (err, res) {
-//         if (err) throw err;
-//         const departments = res.map(function (depQ) {
-//             return {
-//                 name: depQ.name,
-//                 value: depQ.id
-//             };
-//         });
-//         inquirer.prompt([
-//             {
-//                 name: 'first',
-//                 type: 'input',
-//                 message: 'Enter first name'
-//             },
-//             {
-//                 name: 'last',
-//                 type: 'input',
-//                 message: 'Enter last name'
-//             },
-//             {
-//                 name: 'department',
-//                 type: 'list',
-//                 message: 'Enter the department of the new employee',
-//                 choices: departments
-//             }
-//         ]).then(function (data) {
-//             const newEmployee = data;
-//             connection.query('SELECT *  FROM position WHERE department_id = "+newEmployee.department+"', function (err, res) {
-//                 if (err) throw err;
-//                 const empPosition = res.map(function (position) {
-//                     return {
-//                         name: position.title,
-//                         value: positions.id
-//                     };
-//                 });
-//                 inquirer.prompt([
-//                     {
-//                         type: "list",
-//                         name: "positions",
-//                         message: "Select a job title for the new employee",
-//                         choices: empPosition
-//                     }
-//                 ]).then(function (data) {
-//                     const newPosition = data.positions;
-//                     connection.query("SELECT id, CONCAT(first_name, ' ', last_name) AS manager FROM employee", function(err, res) {
-//                         if (err) throw err;
-//                         const empManager = res.map(function(jeffe) {
-//                             return {
-//                                 name: jeffe.manager,
-//                                 value: jeffe.id
-//                             }
-//                         })
-//                         inquirer.prompt([
-//                             {
-//                                 type: "list",
-//                                 name: "manager",
-//                                 message: "Who will be the new employees manager?",
-//                                 choices: empManager
-//                             }
-//                         ]).then(function(data) {
-//                             connection.query("INSERT INTO employee SET ?",
-//                             {
-//                                 first_name: newEmployee.first_name,
-//                                 last_name: newEmployee.last_name,
-//                                 position_id: newPosition,
-//                                 manager_id: data.manager
-//                             },
-//                             function(err, res) {
-//                                 if (err) throw err;
-//                                 runCommands();
-//                             })
-//                         })
-//                     })
-//                 })
-//             })
-//         })
-//     });
-// };
-
-//employee BY department
 function employeeBYdepartment() {
     inquirer.prompt({
         name: 'department',
