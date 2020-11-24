@@ -1,5 +1,6 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+// let conTab = require("console-table");
 const connection = mysql.createConnection({
     host: 'localhost',
     port: 3306,
@@ -24,19 +25,11 @@ const runCommands = () => {
             'View all employees',
             'Add a department',
             'Add a position',
-            'Add an employee',
-            'Search a department',
+            // 'Add an employee',
+            'View employees by department',
+            'View employees by manager',
             'Search a position',
-            // 'Search an employee',
             // 'Update employee positions',
-            // 'Update employee managers',
-            // 'View employees by manager',
-            // 'Delete department',
-            // 'Delete position',
-            // 'Delete employee',
-            // 'View labor cost per department',
-            // 'View labor cost per employee',
-            // 'View labor budget per manager',
             'Exit'
         ],
     })
@@ -57,44 +50,20 @@ const runCommands = () => {
             case 'Add a position':
                 addPosition();
                 break;
-            case 'Add an employee':
-                addEmployee();
+            // case 'Add an employee':
+            //     addEmployee();
+            //     break;
+            case 'View employees by department':
+                employeeBYdepartment();
                 break;
-            case 'Search a department':
-                searchDepartment();
-                break;
+            case 'View employees by manager':
+                    employeeBYmanager();
+                    break;
             case 'Search a position':
                 searchPosition();
                 break;
-            // case 'Search an employee':
-            //     searchEmployee();
-            //     break;
             // case 'Update employee positions':
             //     updatePosition();
-            //     break;
-            // case 'Update employee managers':
-            //     updateManager();
-            //     break;
-            // case 'View employees by manager':
-            //     viewManager();
-            //     break;
-            // case 'Delete department':
-            //     deleteDepartment();
-            //     break;
-            // case 'Delete position':
-            //     deletePosition();
-            //     break;
-            // case 'Delete employee':
-            //     deleteEmployee();
-            //     break;
-            // case 'View labor cost per department':
-            //     laborDepartment();
-            //     break;
-            // case 'View labor cost per employee':
-            //     laborEmployee();
-            //     break;
-            // case 'View labor budget per manager':
-            //     laborManager();
             //     break;
             case 'Exit':
                 console.log("Thank you for your interest in our mySQL Employee Tracker! Happy Coding!")
@@ -197,78 +166,82 @@ function addPosition() {
   });
 };
 
-function addEmployee() {
-    connection.query("SELECT * FROM position", function (err, res) {
-        if (err) throw err;
-
-        inquirer.prompt([
-            {
-                name: "first_name",
-                type: "input",
-                message: "Employee's first name: ",
-            },
-            {
-                name: "last_name",
-                type: "input",
-                message: "Employee's last name: "
-            },
-            {
-                name: "position",
-                type: "list",
-                choices: function() {
-                    let positionList = [];
-                    for (let i = 0; i < res.length; i++) {
-                        positionList.push(res[i].title);
-                    }
-                    return positionList;
-                },
-                message: "What's the new employee's position? "
-            },
-            // {
-            //     name: "manager",
-            //     type: "list",
-            //     choices: function() {
-            //         let managerList = [];
-            //         for (let q = 0; q < res.length; q++) {
-            //             managerList.push(res[q].manager_id);
-            //         }
-            //         return managerList;
-            //     }
-            // }
-        ]).then(function (answer) {
-            let positionID;
-            for (let x = 0; x < res.length; x++) {
-                if (res[x].title == answer.position) {
-                    positionID = res[x].id;
-                    console.log(positionID)
-                }
-            }
-            // let managerID;
-            // for (let p = 0; p < res.length; p++) {
-            //     if (res[p].manager_id === answer.manager) {
-            //         managerID = res[p].manager_id;
-            //         console.log(managerID)
-            //     }
-            // };
-            connection.query(
-                "INSERT INTO employee SET ?",
-                {
-                    first_name: answer.first_name,
-                    last_name: answer.last_name,
-                    position_id: positionID,
-                    manager_id: managerID
-                },
-                function (err) {
-                    if (err) throw err;
-                    console.log("Congrats! The new employee has been added.");
-                    addEmployee();
-                    runCommands();
-                }
-            )
-        })
-    })
-}
-
+// function addEmployee() {
+//     connection.query('SEELCT * FROM position', function(err, res) {
+//         if (err) throw err;
+//     inquirer.prompt([
+//         {
+//         name: "firstName",
+//         type: "input",
+//         message: "Enter first name of new employee"
+//         },
+//         {
+//         name: "lastName",
+//         type: "input",
+//         message: "Enter last name of the new employee"
+//         },
+//         {
+//         name: "positionName",
+//         type: "list",
+//         message: "Enter position of new employee",
+//         choices: function() {
+//             positionArray = [];
+//             result.forEach(result => {
+//                 positionArray.push(
+//                     result.title
+//                 );
+//             })
+//             return positionArray;
+//             }
+//           }
+//         ])
+//         .then(function(answer) {
+//             console.log(answer);
+//             const position = answer.positionName;
+//             connection.query('SELECT * FROM position', function(err, res) {
+//                 if (err) throw err;
+//                 let filteredPosition = res.filter(function(res) {
+//                     return res.title == position;
+//                 })
+//             let positionId = filteredPosition[0].id;
+//             connection.query('SELECT * FROM employee', function(err, res) {
+//                 inquirer.prompt([
+//                     {
+//                         name: "manager",
+//                         type: "list",
+//                         message: "Select manager of new employee",
+//                         choices: function() {
+//                             managerArray = []
+//                             res.forEach(res => {
+//                                 managerArray.push(res.last_name)
+//                             })
+//                             return managerArray;
+//                         }
+//                     }
+//                 ]).then(function(managerAnswer) {
+//                     const manager = managerAnswer.manager;
+//                     connection.query('SELECT * FROM employee', function(err, res) {
+//                         if (err) throw err;
+//                         let filteredManager = res.filter(function(res) {
+//                             return res.last_name == manager;
+//                         })
+//                         let managerId = filteredManager[0].id;
+//                         console.log(managerAnswer);
+//                         let query = "INSERT INTO employee (first_name, last_name, position_id, manager_id) VALUES (?, ?, ?, ?)";
+//                         let values = [answer.firstName, answer.lastName, positionId, managerId]
+//                         console.log(values);
+//                         connection.query(query, values,
+//                             function(err, res, fields) {
+//                                 console.log(`You have successfully added ${(values[0]).toUpperCase()}`)
+//                             })
+//                             runCommands();
+//                     })
+//                 })
+//              })
+//            })
+//         })
+//      })
+//     }
 
 //                      {
 //     connection.query('SELECT * FROM department', function (err, res) {
@@ -351,22 +324,73 @@ function addEmployee() {
 // };
 
 //employee BY department
-function searchDepartment() {
-    const query = `SELECT department.name AS department, position.title, employee.id, employee.first_name, employee.last_name
-    FROM employee
-    LEFT JOIN position ON (position.id = employee.position_id)
-    LEFT JOIN department ON (department.id = position.department_id)
-    ORDER BY department.name;`;
-    connection.query(query, (err, res) => {
-        if (err) throw err;
-        console.log('\n');
-        console.log('VIEW EMPLOYEE BY DEPARTMENT');
-        console.log('\n');
-        console.table(res);
-        runCommands();
-    });
+function employeeBYdepartment() {
+    inquirer.prompt({
+        name: 'department',
+        type: 'list',
+        message: 'Which department would you like to search?',
+        choices: ['Engineering', 'Sales', 'Finance', 'Legal']
+    }).then((answers) => {
+        switch (answers.department) {
+            case 'Engineering':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE position_id BETWEEN 10 AND 19', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    runCommands();
+                });
+            case 'Sales':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE position_id BETWEEN 20 AND 29', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    runCommands();
+                });
+            case 'Finance':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE position_id BETWEEN 30 AND 39', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    runCommands();
+                });
+            case 'Legal':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE position_id BETWEEN 40 AND 49', (err, res) => {
+                    if (err) throw err;
+                    console.table(res);
+                    runCommands();
+                });
+        }
+    })
 };
 
+function employeeBYmanager() {
+    inquirer.prompt({
+        name: 'manager',
+        type: 'list',
+        message: 'Which department manager would you like to search',
+        choices: ['Ashley Rodriguez', 'Tammer Galal', 'Mayer Rothschild', 'Sarah Lourd']
+    }).then((answers) => {
+        switch (answers.manager) {
+            case 'Ashley Rodriguez':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title, position.salary FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE employee.manager_id = 1', (err, res) => {
+                    console.table(res);
+                    runCommands();
+                });
+            case 'Tammer Galal':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title, position.salary FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE employee.manager_id = 2', (err, res) => {
+                    console.table(res);
+                    runCommands();
+                });
+            case 'Mayer Rothschild':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title, position.salary FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE employee.manager_id = 3', (err, res) => {
+                    console.table(res);
+                    runCommands();
+                });
+            case 'Sarah Lourd':
+                return connection.query('SELECT employee.first_name, employee.last_name, position.title, position.salary FROM employee LEFT JOIN position ON employee.position_id = position.id WHERE employee.manager_id = 4', (err, res) => {
+                    console.table(res);
+                    runCommands();
+                });
+        }
+    })
+}
 //brief data on each position
 function searchPosition() {
     inquirer.prompt({
@@ -379,29 +403,12 @@ function searchPosition() {
     connection.query(query, {title: answer.position}, (err, res) => {
         if (err) throw err;
         res.map((r) => 
-        console.log("\n", `id: ${r.id} || title: ${r.title} || salary: ${r.salary} || department_id: ${r.department_id}`, "\n")
+        console.log("\n", "\n", `id: ${r.id} || title: ${r.title} || salary: ${r.salary} || department_id: ${r.department_id}`, "\n", "\n")
         );
         runCommands();
     });
   });
 };
-
-// function searchEmployee = () => {
-//     inquirer.prompt({
-//         name: 'employee',
-//         type: 'input',
-//         message: 'Which employee (surname) would you like to search?'
-//     }).then((answer) => { 
-//     const query = 'SELECT * FROM employee WHERE ?';
-//     connection.query(query, {last_name: answer.employee}, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => 
-//         console.log(`id: ${r.id} || first_name: ${r.first_name} || last_name: ${r.last_name} || position_id: ${r.position_id} || manager_id: ${r.manager_id}`)
-//         );
-//         runCommands();
-//     });
-//   });
-// };
 
 // function updatePosition = () => {
 //     inquirer.prompt(
@@ -426,110 +433,4 @@ function searchPosition() {
 //         runCommands();
 //     });
 //   });
-// };
-
-// function updateManager = () => {
-//     inquirer.prompt(
-//         {
-//         name: 'employee',
-//         type: 'list',
-//         message: 'Which employees position would you like to update (surname)?',
-//         choices: [emp1, emp2, emp3, emp4, ...]
-//         },
-//         {
-//         name: 'manager',
-//         type: 'input',
-//         message: 'Enter the new manager for this employee (First + Last)'
-//         }
-//     ).then((answer) => { 
-//     const query = 'UPDATE employee SET WHERE ?';
-//     connection.query(query, {last_name: answer.employee}, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => 
-//         console.log(`id: ${r.id} || first_name: ${r.first_name} || last_name: ${r.last_name} || position_id: ${answer.position} || manager_id: ${answer.manager}`)
-//         );
-//         runCommands();
-//     });
-//   });
-// };
-
-// function viewManager() {
-//     const query = `SELECT CONCAT(manager.first_name, ' ', manager.last_name AS manager, department.name AS department, employee.id, employee.first_name, employee.last_name, position.title
-//     FROM employee
-//     LEFT JOIN employee manager on manager.id = employee.manager_id
-//     INNER JOIN position ON (position.id = employee.position_id && employee.manager_id != 'NULL)
-//     INNER JOIN department ON (department.id = position.department_id)
-//     ORDER BY manager;`;
-//     connection.query(query, (err, res) => {
-//         if (err) throw err;
-//         console.log('\n');
-//         console.log('VIEW EMPLOYEE BY MANAGER');
-//         console.log('\n');
-//         console.table(res);
-//         // res.map((r) => console.log(r.artist));
-//         runCommands();
-//     });
-// };
-
-// function deleteDepartment = () => {
-//     const query = 'SELECT...';
-//     connection.query(query, (query, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     })
-// };
-
-// function deletePosition = () => {
-//     const query = 'SELECT * FROM ... ';
-//     connection.query(query, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     });
-// };
-
-// function deleteEmployee = () => {
-//     const query = 'SELECT * FROM ... ';
-//     connection.query(query, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     });
-// };
-
-// function laborDepartment = () => {
-//     const query = 'SELECT...';
-//     connection.query(query, (query, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     })
-// };
-
-// function laborEmployee = () => {
-//     const query = 'SELECT * FROM ... ';
-//     connection.query(query, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     });
-// };
-
-// function laborManager = () => {
-//     const query = 'SELECT...';
-//     connection.query(query, (query, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     })
-// };
-
-// function addDepartment = () => {
-//     const query = 'SELECT * FROM ... ';
-//     connection.query(query, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => console.log(r.artist));
-//         runCommands();
-//     });
 // };
