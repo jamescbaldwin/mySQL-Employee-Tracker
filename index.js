@@ -29,7 +29,7 @@ const runCommands = () => {
             'View employees by department',
             'View employees by manager',
             'Search a position',
-            // 'Update employee positions',
+            'Update employee positions',
             'Exit'
         ],
     })
@@ -62,9 +62,9 @@ const runCommands = () => {
             case 'Search a position':
                 searchPosition();
                 break;
-            // case 'Update employee positions':
-            //     updatePosition();
-            //     break;
+            case 'Update employee positions':
+                updateEmployee();
+                break;
             case 'Exit':
                 console.log("Thank you for your interest in our mySQL Employee Tracker! Happy Coding!")
                 connection.end();
@@ -305,6 +305,135 @@ function searchPosition() {
   });
 };
 
+function updateEmployee() {
+    //initialize updatedEmployee object
+    const updatedEmployee = {
+        id: 0,
+        positionID: 0, 
+    };
+    //sql query for Employees
+    const query = `SELECT id, concat(employee.first_name, " ", employee.last_name) AS employee_full_name FROM employee ;`;
+    connection.query(query, (err, res) => {
+        if (err) throw err;
+        //extract employee names and ids to arrays
+        let employeeList = [];
+        let employeesNames = [];
+        for (let i=0;i<res.length;i++){
+            employeeList.push({
+                id: res[i].id,
+                fullName: res[i].employee_full_name});
+            employeesNames.push(res[i].employee_full_name);
+        }
+        //prompt for employee to update
+        inquirer
+        .prompt({
+            type: "list",
+            name: "employee",
+            message: "Select employee to update:",
+            choices: employeesNames
+          })
+        .then(answer => {
+            //get id of chosen employee
+            const chosenEmployee = answer.employee;
+            let chosenEmployeeID;
+            for (let i = 0; i < employeeList.length; i++) {
+              if (employeeList[i].fullName === chosenEmployee) {
+                chosenEmployeeID = employeeList[i].id;
+                break;
+              }
+            }
+            //set updatedEmployee id
+            updatedEmployee.id = chosenEmployeeID;
+            //sql query for roles
+            const query = `SELECT position.title, position.id FROM position;`;
+            connection.query(query, (err, res) => {
+                if (err) throw err;
+                //extract role names and ids to arrays
+                const positions = [];
+                const positionNames = [];
+                for (let i = 0; i < res.length; i++) {
+                    positions.push({
+                        id: res[i].id,
+                        title: res[i].title
+                    });
+                    positionNames.push(res[i].title);
+                }
+                //prompt for role selection
+                inquirer
+                .prompt({
+                    type: "list",
+                    name: "position",
+                    message: "Select new position:",
+                    choices: positionNames
+                })
+                .then(answer => {
+                    //get id of chosen role
+                    const chosenPosition = answer.position;
+                    let chosenPositionID;
+                    for (let i = 0; i < positions.length; i++) {
+                        if (positions[i].title === chosenPosition){
+                            chosenPositionID = positions[i].id;
+                        }
+                    }
+                    //set updatedEmployee role ID 
+                    updatedEmployee.positionID = chosenPositionID;
+                    //sql query to update role
+                    const query = `UPDATE employee SET ? WHERE ?`;
+                    connection.query(query, [
+                        {
+                          position_id: updatedEmployee.positionID
+                        },
+                        {
+                          id: updatedEmployee.id
+                        }
+                        ], (err, res) => {
+                        if (err) throw err;
+                        console.log("\n", "Employee position succeffully updated - please run allEmployees function for confirmation!", "\n");
+                        //show updated employee table
+                        runCommands();
+                    });
+                });
+            });            
+        });
+    });
+}
+// {
+//     connection.query("SELECT employee.id, employee.first_name, employee.last_name, position.title, position.salary, department.name, CONCAT(e.first_name, ' ', e.last_name) AS Manager FROM employee INNER JOIN position on position.id = employee.position_id INNER JOIN department on department.id = position.department_id LEFT JOIN employee e on employee.manager_id = e.id;",
+//     function (err, res) {
+//         if (err) throw err
+//         console.table(res)
+//         inquirer.prompt([
+//         {
+//             name: 'employee',
+//             type: 'input',
+//             message: 'Which employee (by id) would you like to update?'
+//         },
+//         {
+//             name: 'position',
+//             type: 'list',
+//             message: 'Choose the updated position for this employee',
+//             choices: [
+//                 {name: 'Lead Engineer', value: 10},
+//                 {name: 'Software Engineer', value: 11},
+//                 {name: 'Sales Lead', value: 20},
+//                 {name: 'Sales Rep', value: 21},
+//                 {name: 'CFO', value: 30},
+//                 {name: 'Accountant', value: 31},
+//                 {name: 'Legal Team Lead', value: 40},
+//                 {name: 'Lawyer', value: 41}
+//             ]
+//         }
+//     ]).then(function (update) {
+//         console.log(update)
+//         connection.query("UPDATE employee SET position_id ? WHERE id = ?;", [update.employee, update.position],
+//         function (err, response) {
+//             if (err) throw err
+//             console.table(response)
+//             runCommands();
+//         })
+//      })
+//   })
+// };
 // function updatePosition = () => {
 //     inquirer.prompt(
 //         {
