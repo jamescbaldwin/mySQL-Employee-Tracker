@@ -19,4 +19,4 @@ SO THAT I can best organize and oversee my business
 For questions, inquiries, or insights, please contact james via jamescbaldwin@gmail.com
 ```
 
-![screenchot](<img width="1680" alt="Screen Shot 2020-11-25 at 12 53 52 AM" src="https://user-images.githubusercontent.com/70229636/100188702-c2ae6000-2eb8-11eb-8ee0-056c4038aac1.png">
+<img width="1680" alt="Screen Shot 2020-11-25 at 12 53 52 AM" src="https://user-images.githubusercontent.com/70229636/100188702-c2ae6000-2eb8-11eb-8ee0-056c4038aac1.png">
