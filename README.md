@@ -12,7 +12,7 @@ SO THAT I can best organize and oversee my business
 
 ## LINKS
 - [GitHub Repository](https://github.com/jamescbaldwin/mySQL-Employee-Tracker)
-- [Video Tutorial]()
+- [Video Tutorial](https://drive.google.com/file/d/1UtnMFi_ALts_mGdXFUsFDb7qXd6WWi6J/view)
 
 ## CONTACT
 ```
