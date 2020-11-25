@@ -8,7 +8,7 @@ SO THAT I can best organize and oversee my business
 ```
 ## DESCRIPTION/TECHNOLOGIES
 
-```The accompanying files within this directory utilze npm packages 'MySQL' and 'InquirerJs' to build/query databses and to interact with a given user via the terminal command-line, respectively. The initial database and content created for mySQL Workbench are located within the 'db' folder, while the command-line prompts and related functions are written in an 'index.js' file. Given that the user has installed the requisite node_modules and package.json ('npm init' & 'npm install'), the user must can initiate the command-line prompts by simply entering into the terminal line: 'node index.js'. Below is a screenshot of what the user can expect once the application is instantiated.```
+```The accompanying files within this directory utilze npm packages 'MySQL' and 'InquirerJs' to build/query databses and to interact with a given user via the terminal command-line, respectively. The initial database and content created for mySQL Workbench are located within the 'Database' folder, while the command-line prompts and related functions are written in an 'index.js' file. Given that the user has installed the requisite node_modules and package.json ('npm init' & 'npm install'), the user must can initiate the command-line prompts by simply entering into the terminal line: 'node index.js'. Below is a screenshot of what the user can expect once the application is instantiated.```
 
 ## LINKS
 - [GitHub Repository](https://github.com/jamescbaldwin/mySQL-Employee-Tracker)
