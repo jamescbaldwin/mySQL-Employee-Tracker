@@ -217,7 +217,7 @@ function addEmployee() {
         }
         );
     })
-}
+};
 
 function employeeBYdepartment() {
     inquirer.prompt({
@@ -285,8 +285,8 @@ function employeeBYmanager() {
                 });
         }
     })
-}
-//brief data on each position
+};
+
 function searchPosition() {
     inquirer.prompt({
         name: 'position',
@@ -396,65 +396,4 @@ function updateEmployee() {
             });            
         });
     });
-}
-// {
-//     connection.query("SELECT employee.id, employee.first_name, employee.last_name, position.title, position.salary, department.name, CONCAT(e.first_name, ' ', e.last_name) AS Manager FROM employee INNER JOIN position on position.id = employee.position_id INNER JOIN department on department.id = position.department_id LEFT JOIN employee e on employee.manager_id = e.id;",
-//     function (err, res) {
-//         if (err) throw err
-//         console.table(res)
-//         inquirer.prompt([
-//         {
-//             name: 'employee',
-//             type: 'input',
-//             message: 'Which employee (by id) would you like to update?'
-//         },
-//         {
-//             name: 'position',
-//             type: 'list',
-//             message: 'Choose the updated position for this employee',
-//             choices: [
-//                 {name: 'Lead Engineer', value: 10},
-//                 {name: 'Software Engineer', value: 11},
-//                 {name: 'Sales Lead', value: 20},
-//                 {name: 'Sales Rep', value: 21},
-//                 {name: 'CFO', value: 30},
-//                 {name: 'Accountant', value: 31},
-//                 {name: 'Legal Team Lead', value: 40},
-//                 {name: 'Lawyer', value: 41}
-//             ]
-//         }
-//     ]).then(function (update) {
-//         console.log(update)
-//         connection.query("UPDATE employee SET position_id ? WHERE id = ?;", [update.employee, update.position],
-//         function (err, response) {
-//             if (err) throw err
-//             console.table(response)
-//             runCommands();
-//         })
-//      })
-//   })
-// };
-// function updatePosition = () => {
-//     inquirer.prompt(
-//         {
-//         name: 'employee',
-//         type: 'list',
-//         message: 'Which employees position would you like to update (surname)?',
-//         choices: [emp1, emp2, emp3, emp4,]
-//         },
-//         {
-//         name: 'position',
-//         type: 'input',
-//         message: 'Enter the new position for this employee'
-//         }
-//     ).then((answer) => { 
-//     const query = 'UPDATE employee SET WHERE ?';
-//     connection.query(query, {last_name: answer.employee}, (err, res) => {
-//         if (err) throw err;
-//         res.map((r) => 
-//         console.log(`id: ${r.id} || first_name: ${r.first_name} || last_name: ${r.last_name} || position_id: ${answer.position} || manager_id: ${r.manager_id}`)
-//         );
-//         runCommands();
-//     });
-//   });
-// };
+};
